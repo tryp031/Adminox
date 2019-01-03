@@ -5,4 +5,4 @@ export const AXIOS = axios.create({
   headers: {
     'Access-Control-Allow-Origin': 'http://localhost:9528'
   }
-});
+})

@@ -15,12 +15,12 @@ const app = {
       } else {
         Cookies.set('sidebarStatus', 0)
       }
-      state.sidebar.opened = !state.sidebar.opened;
+      state.sidebar.opened = !state.sidebar.opened
       state.sidebar.withoutAnimation = false
     },
     CLOSE_SIDEBAR: (state, withoutAnimation) => {
-      Cookies.set('sidebarStatus', 1);
-      state.sidebar.opened = false;
+      Cookies.set('sidebarStatus', 1)
+      state.sidebar.opened = false
       state.sidebar.withoutAnimation = withoutAnimation
     },
     TOGGLE_DEVICE: (state, device) => {
@@ -38,6 +38,6 @@ const app = {
       commit('TOGGLE_DEVICE', device)
     }
   }
-};
+}
 
 export default app

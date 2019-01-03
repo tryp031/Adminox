@@ -7,4 +7,4 @@ describe('User.vue', () => {
     const contentButton = wrapper.find('button');
     expect(contentButton.text()).toEqual('Create User');
   })
-});
+})
