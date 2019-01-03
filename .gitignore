@@ -1,0 +1,9 @@
+backend/target/classes
+backend/target/classes/application.properties
+backend/target/classes/co/dmazo/adminox/user/controller/UserController.class
+backend/target/classes/co/dmazo/adminox/user/dao/UserDao.class
+backend/target/classes/co/dmazo/adminox/user/dao/impl/UserDaoImpl.class
+backend/target/classes/co/dmazo/adminox/user/domain/UserReport.class
+backend/target/classes/co/dmazo/adminox/user/service/UserService.class
+backend/target/classes/co/dmazo/adminox/user/service/impl/UserServiceImpl.class
+backend/target/classes/META-INF/backend.kotlin_module
