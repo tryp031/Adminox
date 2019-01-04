@@ -1,11 +1,13 @@
 package co.dmazo.adminox.user.controller;
 
 import co.dmazo.adminox.user.domain.UserDto;
+import co.dmazo.adminox.user.domain.UserFilterDto;
 import co.dmazo.adminox.user.domain.UserReport;
 import co.dmazo.adminox.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,19 +23,18 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(path = "/hello")
-    public @ResponseBody String sayHello() {
-        LOG.info("GET called on /hello resource");
-        return "HELLO USER LOSER";
-    }
-
     @RequestMapping(path = "/getAllUser")
-    public @ResponseBody List<UserReport> getAllUser() {
-        return userService.getAllUsers();
+    public @ResponseBody List<UserReport> getAllUser(@RequestBody UserFilterDto userFilterDto) {
+        return userService.getAllUsers(userFilterDto);
     }
 
     @RequestMapping(path = "/save")
     public @ResponseBody UserReport save(@RequestBody UserDto userDto) {
         return userService.save(userDto);
+    }
+
+    @RequestMapping(path = "/updateStatus/{userId}")
+    public @ResponseBody UserReport updateStatus(@PathVariable("userId") int userId) {
+        return userService.updateStatus(userId);
     }
 }

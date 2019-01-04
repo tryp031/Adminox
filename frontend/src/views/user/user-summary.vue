@@ -37,10 +37,10 @@
     <!--grid-->
     <el-row :gutter="10">
       <el-col :span="4">
-        <el-dropdown size="mini" split-button type="info">
+        <el-dropdown size="mini" split-button type="info" @command="handleCommand">
           Action
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>Export to PDF</el-dropdown-item>
+            <el-dropdown-item command="pdf">Export to PDF</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-col>
@@ -62,10 +62,10 @@
       <el-table-column fixed="right" label="Action" width="120">
         <template slot-scope="scope">
           <el-tooltip content="Edit" placement="top">
-            <el-button icon="el-icon-edit" circle @click.native.prevent="editUser(scope.$index)"></el-button>
+            <el-button icon="el-icon-edit" circle @click.native.prevent="editUser(scope.row)"></el-button>
           </el-tooltip>
           <el-tooltip content="Change status" placement="top">
-            <el-button icon="el-icon-refresh" circle></el-button>
+            <el-button icon="el-icon-refresh" circle @click="updateUserStatus(scope.row)"></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -78,6 +78,8 @@
 import {AXIOS} from '@/components/http-common'
 import { EventBus } from '@/utils/event-bus'
 import userForm from '@/views/user/user-form'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 export default {
   components: {
@@ -86,10 +88,10 @@ export default {
   data: function () {
     return {
       optionsStatus: [{
-        value: true,
+        value: 1,
         label: 'Active'
       }, {
-        value: false,
+        value: 0,
         label: 'Inactive'
       }],
 
@@ -107,7 +109,8 @@ export default {
       }],
 
       errors: {
-        getAllUser: null
+        getAllUser: [],
+        updateStatus: []
       }
     }
   },
@@ -136,18 +139,56 @@ export default {
       const property = column['property'];
       return row[property] === value;
     },
-    editUser(index) {
-      EventBus.$emit('open-form', this.dataTblUsers[index]);
+    handleCommand(command) {
+      if (command === 'pdf') {
+        let pdfName = 'Export Users';
+        const columns = [
+          {title: "Name", dataKey: "nameComplete"},
+          {title: "Login", dataKey: "login"},
+          {title: "Email", dataKey: "email"},
+          {title: "Status", dataKey: "status"}
+        ];
+
+        // Only pt supported (not mm or in)
+        const doc = new jsPDF('p', 'pt');
+        doc.autoTable(columns, this.dataTblUsers, {
+          margin: {top: 60},
+          addPageContent: function(data) {
+            doc.text("Users", 40, 30);
+          }
+        });
+        doc.save(pdfName);
+      }
+    },
+    editUser(data) {
+      EventBus.$emit('open-form', data);
+    },
+    updateUserStatus(data) {
+      AXIOS.post(`/user/updateStatus/${data.id}`)
+        .then(response => {
+          data.status = !data.status;
+          this.$message({
+            message: 'Successfully updated status.',
+            type: 'success'
+          });
+        })
+        .catch(e => {
+          this.errors.updateStatus.push(e);
+          this.$message({
+            message: 'Error updating status.',
+            type: 'error'
+          });
+        });
     },
     getAllData () {
-      AXIOS.get(`/user/getAllUser`)
+      AXIOS.post(`/user/getAllUser`, this.filterForm)
         .then(response => {
           // JSON responses are automatically parsed.
           this.dataTblUsers = response.data
         })
         .catch(e => {
           this.errors.getAllUser.push(e)
-        })
+        });
     }
   }
 }

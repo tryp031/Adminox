@@ -2,6 +2,7 @@ package co.dmazo.adminox.user.dao.impl;
 
 import co.dmazo.adminox.user.dao.UserDao;
 import co.dmazo.adminox.user.domain.UserDto;
+import co.dmazo.adminox.user.domain.UserFilterDto;
 import co.dmazo.adminox.user.domain.UserReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -12,7 +13,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +27,10 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserReport> getAllUsers() {
+    public List<UserReport> getAllUsers(UserFilterDto userFilterDto) {
 
         List<UserReport> result = null;
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
 
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append(" SELECT user.id, ")
@@ -39,8 +43,27 @@ public class UserDaoImpl implements UserDao {
                 .append(" user.status, ")
                 .append(" user.imageUrl ");
         sbQuery.append(" FROM tbluser user ");
+        sbQuery.append(" WHERE 1 = 1 ");
 
-        result = jdbcTemplate.query(sbQuery.toString(), new BeanPropertyRowMapper<>(UserReport.class));
+        if (!StringUtils.isEmpty(userFilterDto.getName())) {
+            sbQuery.append(" AND (user.name LIKE :name ")
+                    .append(" OR user.lastName LIKE :name ) ");
+            parameters.addValue("name", "%" + userFilterDto.getName() + "%");
+        }
+
+        if (!StringUtils.isEmpty(userFilterDto.getLogin())) {
+            sbQuery.append(" AND user.login LIKE :login ");
+            parameters.addValue("login", "%" + userFilterDto.getLogin() + "%");
+        }
+
+        if (userFilterDto.getStatus() != null && userFilterDto.getStatus().length > 0) {
+            sbQuery.append(" AND user.status IN (:status) ");
+            parameters.addValue("status", Arrays.asList(userFilterDto.getStatus()));
+        }
+
+        sbQuery.append(" ORDER BY user.name ");
+
+        result = jdbcTemplate.query(sbQuery.toString(), parameters, new BeanPropertyRowMapper<>(UserReport.class));
 
         return result;
     }
@@ -109,5 +132,17 @@ public class UserDaoImpl implements UserDao {
         }
 
         return userId;
+    }
+
+    @Override
+    @Transactional
+    public void updateStatus(long userId) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", userId);
+
+        StringBuilder sbQueryUpdate = new StringBuilder();
+        sbQueryUpdate.append(" UPDATE tbluser SET status = !status WHERE id = :id ");
+
+        jdbcTemplate.update(sbQueryUpdate.toString(), parameters);
     }
 }
