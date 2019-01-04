@@ -5,7 +5,7 @@
         <h3>User Summary</h3>
       </el-col>
       <el-col :span="3" :offset="17" align="right">
-        <el-button type="success" icon="el-icon-plus" @click="dialogFormVisible = true">Add User</el-button>
+        <el-button type="success" icon="el-icon-plus" @click="openForm(); resetForm('formUser')">Add User</el-button>
       </el-col>
     </el-row>
     <!--form-->
@@ -82,8 +82,9 @@
 </template>
 
 <script>
-import jsUserform from '@/views/user/js/user-form'
 import {AXIOS} from '@/components/http-common'
+import { EventBus } from '@/utils/event-bus'
+
 export default {
   data () {
     const validatePass = (rule, value, callback) => {
@@ -114,7 +115,6 @@ export default {
         }
     };
     return {
-      dialogTableVisible: false,
       dialogFormVisible: false,
       rulesForm: {
         name: [
@@ -154,6 +154,12 @@ export default {
       }
     }
   },
+  mounted() {
+    EventBus.$on('open-form', userData => {
+      this.openForm();
+      this.formUser = userData;
+    });
+  },
   methods: {
     handleAvatarSuccess(res, file) {
       this.formUser.imageUrl = URL.createObjectURL(file.raw);
@@ -170,8 +176,23 @@ export default {
       }
       return isJPGOrPNG && isLt2M;
     },
+    openForm() {
+      this.dialogFormVisible = true;
+    },
     resetForm(formName) {
       this.$refs[formName].resetFields();
+      this.formUser = {
+        id: 0,
+        name: '',
+        lastName: '',
+        email: '',
+        login: '',
+        password: '',
+        checkPass: '',
+        status: true,
+        imageUrl: ''
+      };
+      EventBus.$emit('get-users');
     },
     saveUser (formUserValid) {
       this.$refs[formUserValid].validate((valid) => {
@@ -186,6 +207,7 @@ export default {
             .then(response => {
               // JSON responses are automatically parsed.
               this.formUser = response.data;
+              EventBus.$emit('get-users');
 
               this.$notify({
                 title: 'Success',

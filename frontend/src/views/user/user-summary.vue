@@ -59,6 +59,16 @@
             disable-transitions>{{scope.row.status === false ? 'Inactive' : 'Active'}}</el-tag>
         </template>
       </el-table-column>
+      <el-table-column fixed="right" label="Action" width="120">
+        <template slot-scope="scope">
+          <el-tooltip content="Edit" placement="top">
+            <el-button icon="el-icon-edit" circle @click.native.prevent="editUser(scope.$index)"></el-button>
+          </el-tooltip>
+          <el-tooltip content="Change status" placement="top">
+            <el-button icon="el-icon-refresh" circle></el-button>
+          </el-tooltip>
+        </template>
+      </el-table-column>
     </el-table>
     <!--/grid-->
   </div>
@@ -66,8 +76,8 @@
 
 <script>
 import {AXIOS} from '@/components/http-common'
+import { EventBus } from '@/utils/event-bus'
 import userForm from '@/views/user/user-form'
-import jsUserSummary from '@/views/user/js/user-form'
 
 export default {
   components: {
@@ -104,6 +114,11 @@ export default {
   created: function () {
     this.getAllData();
   },
+  mounted() {
+    EventBus.$on('get-users', () => {
+      this.getAllData();
+    });
+  },
   methods: {
     setCurrent(row) {
       this.$refs.singleTable.setCurrentRow(row);
@@ -120,6 +135,9 @@ export default {
     filterHandler(value, row, column) {
       const property = column['property'];
       return row[property] === value;
+    },
+    editUser(index) {
+      EventBus.$emit('open-form', this.dataTblUsers[index]);
     },
     getAllData () {
       AXIOS.get(`/user/getAllUser`)
