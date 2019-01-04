@@ -50,7 +50,7 @@
       <el-table-column prop="login" label="Login" sortable width="180"></el-table-column>
       <el-table-column prop="email" label="Email"></el-table-column>
       <el-table-column prop="status" label="Status" width="180"
-       :filters="[{ text: 'Active', value: '1' }, { text: 'Inactive', value: '0' }]"
+       :filters="[{ text: 'Active', value: true }, { text: 'Inactive', value: false }]"
        :filter-method="filterStatus"
       >
         <template slot-scope="scope">
@@ -76,10 +76,10 @@ export default {
   data: function () {
     return {
       optionsStatus: [{
-        value: '1',
+        value: true,
         label: 'Active'
       }, {
-        value: '0',
+        value: false,
         label: 'Inactive'
       }],
 
@@ -93,8 +93,7 @@ export default {
         nameComplete: '',
         login: '',
         email: '',
-        status: '1',
-        statusName: 'Active'
+        status: '1'
       }],
 
       errors: {

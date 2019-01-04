@@ -1,10 +1,12 @@
 package co.dmazo.adminox.user.controller;
 
+import co.dmazo.adminox.user.domain.UserDto;
 import co.dmazo.adminox.user.domain.UserReport;
 import co.dmazo.adminox.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,5 +30,10 @@ public class UserController {
     @RequestMapping(path = "/getAllUser")
     public @ResponseBody List<UserReport> getAllUser() {
         return userService.getAllUsers();
+    }
+
+    @RequestMapping(path = "/save")
+    public @ResponseBody UserReport save(@RequestBody UserDto userDto) {
+        return userService.save(userDto);
     }
 }
