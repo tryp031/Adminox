@@ -52,7 +52,7 @@ export default {
         published: 'success',
         draft: 'gray',
         deleted: 'danger'
-      };
+      }
       return statusMap[status]
     }
   },
@@ -67,9 +67,9 @@ export default {
   },
   methods: {
     fetchData() {
-      this.listLoading = true;
+      this.listLoading = true
       getList(this.listQuery).then(response => {
-        this.list = response.data.items;
+        this.list = response.data.items
         this.listLoading = false
       })
     }

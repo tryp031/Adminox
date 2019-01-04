@@ -17,4 +17,4 @@ describe('Hello.vue', () => {
     // Then
     expect(contentH1.text()).toEqual('Welcome to your Jest powered Vue.js App');
   })
-});
+})

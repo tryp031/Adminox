@@ -1,26 +1,26 @@
-'use strict';
-const path = require('path');
-const utils = require('./utils');
-const webpack = require('webpack');
-const config = require('../config');
-const merge = require('webpack-merge');
-const baseWebpackConfig = require('./webpack.base.conf');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+'use strict'
+const path = require('path')
+const utils = require('./utils')
+const webpack = require('webpack')
+const config = require('../config')
+const merge = require('webpack-merge')
+const baseWebpackConfig = require('./webpack.base.conf')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
 
-const env = require('../config/prod.env');
+const env = require('../config/prod.env')
 
 // For NamedChunksPlugin
-const seen = new Set();
-const nameLength = 4;
+const seen = new Set()
+const nameLength = 4
 
 const webpackConfig = merge(baseWebpackConfig, {
   mode: 'production',
@@ -76,13 +76,13 @@ const webpackConfig = merge(baseWebpackConfig, {
       if (chunk.name) {
         return chunk.name
       }
-      const modules = Array.from(chunk.modulesIterable);
+      const modules = Array.from(chunk.modulesIterable)
       if (modules.length > 1) {
-        const hash = require('hash-sum');
-        const joinedHash = hash(modules.map(m => m.id).join('_'));
-        let len = nameLength;
-        while (seen.has(joinedHash.substr(0, len))) len++;
-        seen.add(joinedHash.substr(0, len));
+        const hash = require('hash-sum')
+        const joinedHash = hash(modules.map(m => m.id).join('_'))
+        let len = nameLength
+        while (seen.has(joinedHash.substr(0, len))) len++
+        seen.add(joinedHash.substr(0, len))
         return `chunk-${joinedHash.substr(0, len)}`
       } else {
         return modules[0].id
@@ -133,10 +133,10 @@ const webpackConfig = merge(baseWebpackConfig, {
       new OptimizeCSSAssetsPlugin()
     ]
   }
-});
+})
 
 if (config.build.productionGzip) {
-  const CompressionWebpackPlugin = require('compression-webpack-plugin');
+  const CompressionWebpackPlugin = require('compression-webpack-plugin')
 
   webpackConfig.plugins.push(
     new CompressionWebpackPlugin({
@@ -153,7 +153,7 @@ if (config.build.productionGzip) {
 
 if (config.build.generateAnalyzerReport || config.build.bundleAnalyzerReport) {
   const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-    .BundleAnalyzerPlugin;
+    .BundleAnalyzerPlugin
 
   if (config.build.bundleAnalyzerReport) {
     webpackConfig.plugins.push(
@@ -175,4 +175,4 @@ if (config.build.generateAnalyzerReport || config.build.bundleAnalyzerReport) {
   }
 }
 
-module.exports = webpackConfig;
+module.exports = webpackConfig
