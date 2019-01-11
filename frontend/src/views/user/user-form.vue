@@ -150,7 +150,7 @@ export default {
         imageUrl: '',
       },
       errors: {
-        saveUser: null
+        saveUser: []
       }
     }
   },
