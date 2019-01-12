@@ -54,12 +54,12 @@
         <el-row :gutter="10">
           <el-col :span="12">
             <el-form-item label="Password" prop="password">
-              <el-input type="password" v-model="formUser.password" autocomplete="off"></el-input>
+              <el-input type="password" v-model="formUser.password" autocomplete="off" :disabled="validPass"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="Confirm" prop="checkPass">
-              <el-input type="password" v-model="formUser.checkPass" autocomplete="off"></el-input>
+              <el-input type="password" v-model="formUser.checkPass" autocomplete="off" :disabled="validPass"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -88,6 +88,11 @@ import { EventBus } from '@/utils/event-bus'
 export default {
   data () {
     const validatePass = (rule, value, callback) => {
+      // if user exist then no validate password
+      if (this.formUser.id != null && this.formUser.id > 0) {
+        callback();
+      }
+
       if (this.formUser.password === '') {
         callback(new Error('Please input the password'));
       } else {
@@ -98,6 +103,11 @@ export default {
       }
     };
     const validatePassConfirm = (rule, value, callback) => {
+      // if user exist then no validate password
+      if (this.formUser.id != null && this.formUser.id > 0) {
+        callback();
+      }
+
       if (value === '') {
         callback(new Error('Please input the password again'));
       } else if (value !== this.formUser.password) {
@@ -116,6 +126,7 @@ export default {
     };
     return {
       dialogFormVisible: false,
+      validPass:false,
       rulesForm: {
         name: [
           { required: true, message: 'Please input name', trigger: 'blur' }
@@ -148,9 +159,12 @@ export default {
         checkPass: '',
         status: true,
         imageUrl: '',
+        imageProfile: []
       },
+      fileProfile: null,
       errors: {
-        saveUser: []
+        saveUser: [],
+        uploadImage: []
       }
     }
   },
@@ -158,11 +172,25 @@ export default {
     EventBus.$on('open-form', userData => {
       this.openForm();
       this.formUser = userData;
+
+      if (this.formUser.id != null && this.formUser.id > 0) {
+        this.validPass = true;
+      }
+
+      // Show Image
+      if (this.formUser.imageProfile != null) {
+        this.formUser.imageUrl = `data:image/png;base64,${this.formUser.imageProfile}`;
+        //Clean image profile
+        // this.formUser.imageProfile = [];
+      }
     });
   },
   methods: {
     handleAvatarSuccess(res, file) {
       this.formUser.imageUrl = URL.createObjectURL(file.raw);
+      if (this.formUser.id != null && this.formUser.id > 0) {
+        this.uploadProfile();
+      }
     },
     beforeAvatarUpload(file) {
       const isJPGOrPNG = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -174,6 +202,11 @@ export default {
       if (!isLt2M) {
         this.$message.error('Avatar picture size can not exceed 2MB!');
       }
+
+      if (isJPGOrPNG && isLt2M) {
+        this.fileProfile = file;
+      }
+
       return isJPGOrPNG && isLt2M;
     },
     openForm() {
@@ -190,8 +223,10 @@ export default {
         password: '',
         checkPass: '',
         status: true,
-        imageUrl: ''
+        imageUrl: '',
+        imageProfile: []
       };
+      this.validPass = false;
       EventBus.$emit('get-users');
     },
     saveUser (formUserValid) {
@@ -203,10 +238,21 @@ export default {
           });
           return false;
         } else {
+          //Clean image profile before save
+          this.formUser.imageUrl = '';
           AXIOS.post(`/user/save`, this.formUser)
             .then(response => {
-              // JSON responses are automatically parsed.
               this.formUser = response.data;
+
+              this.validPass = true;
+              if (this.formUser.id != null && this.formUser.id > 0 && this.fileProfile != null) {
+                this.uploadProfile();
+              } else if (this.formUser.imageProfile != null) {
+                // Show Image
+                this.formUser.imageUrl = `data:image/png;base64,${this.formUser.imageProfile}`;
+              }
+
+              // Refresh grid
               EventBus.$emit('get-users');
 
               this.$notify({
@@ -215,11 +261,35 @@ export default {
                 type: 'success'
               });
             }).catch(e => {
-            this.errors.saveUser.push(e)
+            this.errors.saveUser.push(e);
           });
         }
       });
-   }
+    },
+    uploadProfile () {
+      if (this.formUser.id != null && this.formUser.id > 0) {
+        let fd = new FormData();
+        fd.append('file', this.fileProfile);
+        fd.append('userId', this.formUser.id);
+        AXIOS.post(`/user/uploadFile`, fd)
+          .then(result => {
+            this.formUser = result.data;
+
+            if (this.formUser.imageProfile != null) {
+              // Show Image
+              this.formUser.imageUrl = `data:image/png;base64,${this.formUser.imageProfile}`;
+            }
+
+            this.$notify({
+              title: 'Success',
+              message: 'Image loaded successfully',
+              type: 'success'
+            });
+          }).catch(e => {
+          this.errors.uploadImage.push(e);
+        });
+      }
+    }
   }
 }
 </script>

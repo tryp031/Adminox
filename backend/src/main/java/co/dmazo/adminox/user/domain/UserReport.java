@@ -7,9 +7,9 @@ public class UserReport {
     private String nameComplete;
     private String email;
     private String login;
-    private String password;
     private Boolean status;
     private String imageUrl;
+    private byte[] imageProfile;
 
     public Long getId() {
         return id;
@@ -59,14 +59,6 @@ public class UserReport {
         this.login = login;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Boolean getStatus() {
         return status;
     }
@@ -81,5 +73,13 @@ public class UserReport {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public byte[] getImageProfile() {
+        return imageProfile;
+    }
+
+    public void setImageProfile(byte[] imageProfile) {
+        this.imageProfile = imageProfile;
     }
 }

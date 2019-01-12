@@ -39,9 +39,8 @@ public class UserDaoImpl implements UserDao {
                 .append(" CONCAT(user.name, ' ', user.lastName) AS nameComplete, ")
                 .append(" user.email, ")
                 .append(" user.login, ")
-                .append(" user.password, ")
                 .append(" user.status, ")
-                .append(" user.imageUrl ");
+                .append(" user.imageProfile ");
         sbQuery.append(" FROM tbluser user ");
         sbQuery.append(" WHERE 1 = 1 ");
 
@@ -83,9 +82,8 @@ public class UserDaoImpl implements UserDao {
                 .append(" CONCAT(user.name, ' ', user.lastName) AS nameComplete, ")
                 .append(" user.email, ")
                 .append(" user.login, ")
-                .append(" user.password, ")
                 .append(" user.status, ")
-                .append(" user.imageUrl ");
+                .append(" user.imageProfile ");
         sbQuery.append(" FROM tbluser user ");
         sbQuery.append(" WHERE id = :id ");
 
@@ -108,19 +106,17 @@ public class UserDaoImpl implements UserDao {
                 .addValue("password", userDto.getPassword())
                 .addValue("status", userDto.getStatus());
 
-        if (userDto.getId() != null && userDto.getId() > 0L) {
-
+        if (userDto.getId() > 0) {
             StringBuilder sbQueryUpdate = new StringBuilder();
             sbQueryUpdate.append(" UPDATE tbluser ")
                     .append(" SET name = :name, ")
                     .append(" lastName = :lastName, ")
                     .append(" email = :email, ")
-                    .append(" password = :password, ")
                     .append(" status = :status ");
             sbQueryUpdate.append(" WHERE id = :id ");
 
             jdbcTemplate.update(sbQueryUpdate.toString(), parameters);
-            userId = userDto.getId().intValue();
+            userId = userDto.getId();
         } else {
             KeyHolder holder = new GeneratedKeyHolder();
             StringBuilder sbQueryInsert = new StringBuilder();
@@ -142,6 +138,18 @@ public class UserDaoImpl implements UserDao {
 
         StringBuilder sbQueryUpdate = new StringBuilder();
         sbQueryUpdate.append(" UPDATE tbluser SET status = !status WHERE id = :id ");
+
+        jdbcTemplate.update(sbQueryUpdate.toString(), parameters);
+    }
+
+    @Override
+    public void uploadProfile(UserDto userDto) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", userDto.getId())
+                .addValue("imageProfile", userDto.getImageProfile());
+
+        StringBuilder sbQueryUpdate = new StringBuilder();
+        sbQueryUpdate.append(" UPDATE tbluser SET imageProfile = :imageProfile WHERE id = :id ");
 
         jdbcTemplate.update(sbQueryUpdate.toString(), parameters);
     }
