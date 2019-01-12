@@ -15,4 +15,6 @@ public interface UserDao {
     int saveOrUpdate(UserDto userDto);
 
     void updateStatus(long userId);
+
+    void uploadProfile(UserDto userDto);
 }

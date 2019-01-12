@@ -1,7 +1,7 @@
 package co.dmazo.adminox.user.domain;
 
 public class UserDto {
-    private Long id;
+    private int id;
     private String name;
     private String lastName;
     private String email;
@@ -9,12 +9,13 @@ public class UserDto {
     private String password;
     private Boolean status;
     private String imageUrl;
+    private byte[] imageProfile;
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -72,5 +73,13 @@ public class UserDto {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public byte[] getImageProfile() {
+        return imageProfile;
+    }
+
+    public void setImageProfile(byte[] imageProfile) {
+        this.imageProfile = imageProfile;
     }
 }
