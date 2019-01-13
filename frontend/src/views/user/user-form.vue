@@ -250,10 +250,10 @@ export default {
               } else if (this.formUser.imageProfile != null) {
                 // Show Image
                 this.formUser.imageUrl = `data:image/png;base64,${this.formUser.imageProfile}`;
-              }
 
-              // Refresh grid
-              EventBus.$emit('get-users');
+                // Refresh grid
+                EventBus.$emit('get-users');
+              }
 
               this.$notify({
                 title: 'Success',
@@ -285,6 +285,7 @@ export default {
               message: 'Image loaded successfully',
               type: 'success'
             });
+            EventBus.$emit('get-users');
           }).catch(e => {
           this.errors.uploadImage.push(e);
         });
