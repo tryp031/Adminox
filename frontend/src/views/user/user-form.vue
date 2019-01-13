@@ -180,8 +180,6 @@ export default {
       // Show Image
       if (this.formUser.imageProfile != null) {
         this.formUser.imageUrl = `data:image/png;base64,${this.formUser.imageProfile}`;
-        //Clean image profile
-        // this.formUser.imageProfile = [];
       }
     });
   },

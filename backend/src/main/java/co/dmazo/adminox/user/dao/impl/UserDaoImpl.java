@@ -4,6 +4,7 @@ import co.dmazo.adminox.user.dao.UserDao;
 import co.dmazo.adminox.user.domain.UserDto;
 import co.dmazo.adminox.user.domain.UserFilterDto;
 import co.dmazo.adminox.user.domain.UserReport;
+import co.dmazo.adminox.user.domain.UserSecurityReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -88,6 +89,25 @@ public class UserDaoImpl implements UserDao {
         sbQuery.append(" WHERE id = :id ");
 
         result = jdbcTemplate.queryForObject(sbQuery.toString(), parameters, BeanPropertyRowMapper.newInstance(UserReport.class));
+
+        return result;
+    }
+
+    @Override
+    public UserSecurityReport getUsersByLogin(String login) {
+        UserSecurityReport result = null;
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("login", login);
+
+        StringBuilder sbQuery = new StringBuilder();
+        sbQuery.append("  SELECT user.id,  ")
+                .append(" user.login, ")
+                .append(" user.password ");
+        sbQuery.append(" FROM tbluser user ");
+        sbQuery.append(" WHERE login = :login ");
+
+        result = jdbcTemplate.queryForObject(sbQuery.toString(), parameters, BeanPropertyRowMapper.newInstance(UserSecurityReport.class));
 
         return result;
     }
