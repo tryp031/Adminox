@@ -3,7 +3,7 @@ package co.dmazo.adminox.user.domain;
 public class UserFilterDto {
     private String name;
     private String login;
-    private int[] status;
+    private Integer[] status;
 
     public String getName() {
         return name;
@@ -21,11 +21,11 @@ public class UserFilterDto {
         this.login = login;
     }
 
-    public int[] getStatus() {
+    public Integer[] getStatus() {
         return status;
     }
 
-    public void setStatus(int[] status) {
+    public void setStatus(Integer[] status) {
         this.status = status;
     }
 }

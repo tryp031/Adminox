@@ -13,6 +13,9 @@
             Home
           </el-dropdown-item>
         </router-link>
+        <el-dropdown-item>
+          <span style="display:block;" @click="openChangePass">Change Password</span>
+        </el-dropdown-item>
         <el-dropdown-item divided>
           <span style="display:block;" @click="logout">LogOut</span>
         </el-dropdown-item>
@@ -25,6 +28,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { EventBus } from '@/utils/event-bus'
 
 export default {
   components: {
@@ -40,6 +44,9 @@ export default {
   methods: {
     toggleSideBar() {
       this.$store.dispatch('ToggleSideBar')
+    },
+    openChangePass () {
+      EventBus.$emit('open-change-pass-option');
     },
     logout() {
       this.$store.dispatch('LogOut').then(() => {

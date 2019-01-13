@@ -5,6 +5,7 @@
     <div class="main-container">
       <navbar/>
       <app-main/>
+      <change-pass></change-pass>
     </div>
   </div>
 </template>
@@ -12,15 +13,23 @@
 <script>
 import { Navbar, Sidebar, AppMain } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
+import { EventBus } from '@/utils/event-bus'
+import changePass from '@/views/user/user-change-pass'
 
 export default {
   name: 'Layout',
   components: {
     Navbar,
     Sidebar,
-    AppMain
+    AppMain,
+    changePass
   },
   mixins: [ResizeMixin],
+  mounted() {
+    EventBus.$on('open-change-pass-option', () => {
+      EventBus.$emit('open-change-pass', 11);
+    });
+  },
   computed: {
     sidebar() {
       return this.$store.state.app.sidebar
